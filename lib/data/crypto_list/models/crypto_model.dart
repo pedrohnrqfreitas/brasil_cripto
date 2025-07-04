@@ -38,13 +38,9 @@ class CryptoModel {
   }
 
   CryptoEntity toEntity() {
-    // A API do CoinGecko retorna sparkline_in_7d como um objeto com a chave 'price'
-    // que contém um array de valores numéricos representando o preço nos últimos 7 dias
     List<double> sparkline = [];
 
-    // Verificar se sparklineIn7d existe e tem a estrutura esperada
     if (sparklineIn7d != null && sparklineIn7d is Map) {
-      // Acessar o array 'price' dentro do objeto sparklineIn7d
       final priceList = sparklineIn7d!['price'];
 
       if (priceList != null && priceList is List) {

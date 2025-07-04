@@ -5,8 +5,6 @@ import '../ui/controllers/favorites_controller.dart';
 
 class FavoriteDependency {
   static Future<List<SingleChildWidget>> init(SharedPreferences sharedPreferences) async {
-
-    // Controllers (anteriormente Providers)
     return [
       ChangeNotifierProvider(
         create: (_) => FavoritesController(

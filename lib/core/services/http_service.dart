@@ -1,5 +1,3 @@
-// lib/core/services/http_service.dart
-
 import 'package:dio/dio.dart';
 
 abstract class HttpService {

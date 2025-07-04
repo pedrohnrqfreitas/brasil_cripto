@@ -1,23 +1,31 @@
-
 import 'package:brasil_cripto/features/crypto_list/ui/widgets/crypto_list_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/ui/widgets/empty_state_widget.dart';
 import '../controllers/favorites_controller.dart';
 
-
-/// Página para exibir as criptomoedas favoritas
-class FavoritesPage extends StatelessWidget {
+class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
 
   @override
+  State<FavoritesPage> createState() => _FavoritesPageState();
+}
+
+class _FavoritesPageState extends State<FavoritesPage>
+    with AutomaticKeepAliveClientMixin {
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       backgroundColor: AppColors.divider,
       appBar: AppBar(
-        backgroundColor: AppColors.divider ,
+        backgroundColor: AppColors.divider,
         title: const Text('Favoritos'),
         actions: [
           Consumer<FavoritesController>(
@@ -51,7 +59,6 @@ class FavoritesPage extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: () {
-                      // Voltar para a aba de mercado
                       DefaultTabController.of(context).animateTo(0);
                     },
                     icon: const Icon(Icons.arrow_back),
@@ -61,18 +68,13 @@ class FavoritesPage extends StatelessWidget {
               ),
             );
           }
-
           return RefreshIndicator(
-            onRefresh: () async {
-              // Aqui você poderia atualizar os preços dos favoritos
-              // fazendo uma requisição específica para eles
-            },
+            onRefresh: () async {},
             child: ListView.builder(
               padding: const EdgeInsets.only(bottom: 16),
               itemCount: provider.favorites.length,
               itemBuilder: (context, index) {
                 final crypto = provider.favorites[index];
-
                 return Dismissible(
                   key: Key(crypto.id),
                   direction: DismissDirection.endToStart,
@@ -90,7 +92,6 @@ class FavoritesPage extends StatelessWidget {
                   },
                   onDismissed: (direction) {
                     provider.removeFavorite(crypto.id);
-
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('${crypto.name} removido dos favoritos'),
@@ -159,10 +160,8 @@ class FavoritesPage extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                // Guardar lista para desfazer
                 final favorites = List.from(provider.favorites);
 
-                // Limpar todos
                 for (var crypto in favorites) {
                   provider.removeFavorite(crypto.id);
                 }
@@ -175,7 +174,6 @@ class FavoritesPage extends StatelessWidget {
                     action: SnackBarAction(
                       label: 'Desfazer',
                       onPressed: () {
-                        // Restaurar todos
                         for (var crypto in favorites) {
                           provider.addFavorite(crypto);
                         }

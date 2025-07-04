@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
-/// Widget de gráfico de preços para criptomoedas
 class PriceChartWidget extends StatelessWidget {
-  final List<List<double>> prices; // [[timestamp, price], ...]
+  final List<List<double>> prices;
   final bool isPositive;
 
   const PriceChartWidget({

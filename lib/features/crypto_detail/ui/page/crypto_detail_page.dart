@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
-
 import '../../../../core/utils/ui/widgets/error_widget.dart';
 import '../../../../core/utils/ui/widgets/loading_widget.dart';
 import '../../../../data/crypto_list/entities/crypto_entity.dart';
@@ -53,10 +52,10 @@ class _CryptoDetailPageState extends State<CryptoDetailPage> {
                 expandedHeight: 200,
                 pinned: true,
                 flexibleSpace: FlexibleSpaceBar(
-                  centerTitle: true, // Adicione esta linha para centralizar o título
+                  centerTitle: true,
                   title: Text(
                     widget.crypto.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold), // Adicione esta linha para negrito
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   background: Container(
                     decoration: BoxDecoration(
@@ -95,8 +94,6 @@ class _CryptoDetailPageState extends State<CryptoDetailPage> {
                   ),
                 ],
               ),
-
-              // Conteúdo
               SliverToBoxAdapter(
                 child: _buildContent(context, detailProvider, currencyFormatter, numberFormatter),
               ),
@@ -120,7 +117,6 @@ class _CryptoDetailPageState extends State<CryptoDetailPage> {
           height: 400,
           child: LoadingWidget(message: 'Carregando detalhes...'),
         );
-
       case CryptoDetailState.error:
         return SizedBox(
           height: 400,
@@ -131,28 +127,19 @@ class _CryptoDetailPageState extends State<CryptoDetailPage> {
             },
           ),
         );
-
       case CryptoDetailState.loaded:
         final detail = provider.cryptoDetail!;
-
         return Padding(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Card de preço
               _buildPriceCard(context, detail, currencyFormatter),
               const SizedBox(height: 16),
-
-              // Gráfico de preços
               _buildChartSection(context, detail),
               const SizedBox(height: 16),
-
-              // Estatísticas
               _buildStatsSection(context, detail, currencyFormatter, numberFormatter),
               const SizedBox(height: 16),
-
-              // Descrição
               if (detail.description.isNotEmpty) ...[
                 _buildDescriptionSection(context, detail),
               ],

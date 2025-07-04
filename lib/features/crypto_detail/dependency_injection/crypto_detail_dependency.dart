@@ -7,20 +7,15 @@ import '../../../data/crypto_detail/repositories/implementation/crypto_detail_re
 import '../ui/controller/crypto_detail_controller.dart';
 import '../usecase/get_crypto_detail_usecase.dart';
 
-
 class CryptoDetailDependency {
   static Future<List<SingleChildWidget>> init() async {
-    // External Dependencies
 
-    // Core Services
     final httpService = DioHttpService(baseUrl: ApiConstants.baseUrl);
 
-    // Data Sources
     final cryptoDetailRemoteDataSource = CryptoDetailRemoteDataSourceImpl(
       httpService: httpService,
     );
 
-    // Repositories
     final cryptoRepository = CryptoDetailRepositoryImpl(
       remoteDataSource: cryptoDetailRemoteDataSource,
     );
@@ -29,8 +24,6 @@ class CryptoDetailDependency {
       repository: cryptoRepository,
     );
 
-
-    // Controllers (anteriormente Providers)
     return [
       ChangeNotifierProvider(
         create: (_) => CryptoDetailController(

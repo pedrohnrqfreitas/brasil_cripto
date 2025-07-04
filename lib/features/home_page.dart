@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../core/theme/app_colors.dart';
-import 'crypto_list/ui/controller/crypto_list_controller.dart';
 import 'favorite_crypto/ui/controllers/favorites_controller.dart';
 import 'crypto_list/ui/page/crypto_list_page.dart';
 import 'favorite_crypto/ui/page/favorites_page.dart';
@@ -33,7 +32,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       vsync: this,
     );
 
-    // Carregar dados iniciais após o primeiro frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadInitialData();
     });
@@ -41,18 +39,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   void _loadInitialData() async {
     try {
-      final cryptoController = context.read<CryptoListController>();
       final favoritesController = context.read<FavoritesController>();
 
-      // Aguardar os favoritos serem inicializados se necessário
       if (!favoritesController.isInitialized) {
         await Future.delayed(const Duration(milliseconds: 100));
       }
 
-      // Carregar criptomoedas se ainda não foram carregadas
-      if (cryptoController.state == CryptoListState.initial) {
-        await cryptoController.loadCryptos();
-      }
     } catch (e) {
       debugPrint('Erro ao carregar dados iniciais: $e');
     }

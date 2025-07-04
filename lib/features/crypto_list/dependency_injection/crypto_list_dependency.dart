@@ -13,29 +13,24 @@ import '../usecase/search_cryptos_usecase.dart';
 class CryptoListDependency {
   static Future<List<SingleChildWidget>> init() async {
 
-    // Core Services
     final httpService = DioHttpService(baseUrl: ApiConstants.baseUrl);
 
-    // Data Sources
     final cryptoListRemoteDataSource = CryptoListRemoteDataSourceImpl(
       httpService: httpService,
     );
 
-    // Repositories
     final cryptoListRepository = CryptoListRepositoryImpl(
       remoteDataSource: cryptoListRemoteDataSource,
     );
 
-    // Use Cases
     final getCryptosUseCase = GetCryptosUseCase(
       repository: cryptoListRepository,
     );
 
     final searchCryptosUseCase = SearchCryptosUseCase();
 
-    // Controllers (anteriormente Providers)
     return [
-      ProxyProvider<FavoritesController, CryptoListController>(
+      ChangeNotifierProxyProvider<FavoritesController, CryptoListController>(
         create: (context) {
           final controller = CryptoListController(
             getCryptosUseCase: getCryptosUseCase,
@@ -44,7 +39,6 @@ class CryptoListDependency {
           return controller;
         },
         update: (context, favoritesController, cryptoListController) {
-          // Configurar callback para comunicação entre controllers
           cryptoListController?.setOnCryptosLoadedCallback((cryptos) {
             favoritesController.updateFavoritesList(cryptos);
           });

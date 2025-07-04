@@ -1,8 +1,5 @@
-// lib/presentation/widgets/simple_search_bar_widget.dart
 import 'package:flutter/material.dart';
-
 import '../../../../core/theme/app_colors.dart';
-
 
 class CryptoSearchBarWidget extends StatelessWidget {
   final Function(String) onSearch;

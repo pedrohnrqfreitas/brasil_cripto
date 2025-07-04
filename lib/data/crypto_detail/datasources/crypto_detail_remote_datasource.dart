@@ -1,4 +1,3 @@
-
 import '../models/crypto_detail_model.dart';
 
 abstract class CryptoDetailRemoteDataSource {

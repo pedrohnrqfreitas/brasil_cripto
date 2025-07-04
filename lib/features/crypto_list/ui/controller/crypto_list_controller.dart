@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../../../../data/crypto_list/entities/crypto_entity.dart';
 import '../../usecase/get_cryptos_usecase.dart';
@@ -20,8 +19,10 @@ class CryptoListController extends ChangeNotifier {
   final GetCryptosUseCase _getCryptosUseCase;
   final SearchCryptosUseCase _searchCryptosUseCase;
 
-  // Callback para notificar quando as criptomoedas são carregadas
   Function(List<CryptoEntity>)? _onCryptosLoaded;
+
+  DateTime? _lastFetchTime;
+  static const Duration _cacheValidity = Duration(minutes: 5);
 
   CryptoListController({
     required GetCryptosUseCase getCryptosUseCase,
@@ -30,31 +31,35 @@ class CryptoListController extends ChangeNotifier {
         _searchCryptosUseCase = searchCryptosUseCase;
 
   List<CryptoEntity> _allCryptos = [];
-  final List<CryptoEntity> _displayedCryptos = [];
   List<CryptoEntity> _searchResults = [];
   CryptoListState _state = CryptoListState.initial;
   String _errorMessage = '';
   String _searchQuery = '';
   bool _isRefreshing = false;
-  bool _isLoadingMore = false;
 
-  static const int _itemsPerPage = 10;
-  bool _hasMoreData = true;
-
-  List<CryptoEntity> get cryptos =>
-      _searchQuery.isEmpty ? _displayedCryptos : _searchResults;
+  List<CryptoEntity> get cryptos => _searchQuery.isEmpty ? _allCryptos : _searchResults;
   CryptoListState get state => _state;
   String get errorMessage => _errorMessage;
   String get searchQuery => _searchQuery;
   bool get isRefreshing => _isRefreshing;
-  bool get hasMoreData => _hasMoreData && _searchQuery.isEmpty;
 
-  /// Define callback para ser notificado quando as criptomoedas são carregadas
   void setOnCryptosLoadedCallback(Function(List<CryptoEntity>) callback) {
     _onCryptosLoaded = callback;
   }
 
   Future<void> loadCryptos({bool isRefresh = false}) async {
+    if (!isRefresh &&
+        _state == CryptoListState.loaded &&
+        _allCryptos.isNotEmpty &&
+        _lastFetchTime != null) {
+
+      final timeSinceLastFetch = DateTime.now().difference(_lastFetchTime!);
+      if (timeSinceLastFetch < _cacheValidity) {
+        debugPrint('Usando dados do cache (${timeSinceLastFetch.inSeconds}s desde última busca)');
+        return;
+      }
+    }
+
     if (isRefresh) {
       _isRefreshing = true;
       notifyListeners();
@@ -63,17 +68,15 @@ class CryptoListController extends ChangeNotifier {
     }
 
     try {
-      _displayedCryptos.clear();
-      _hasMoreData = true;
-
       final result = await _getCryptosUseCase.execute();
       _allCryptos = result;
-      _updateDisplayedCryptos();
+      _lastFetchTime = DateTime.now();
 
-      // Notificar que as criptomoedas foram carregadas
       _onCryptosLoaded?.call(_allCryptos);
 
       _setState(CryptoListState.loaded);
+
+      debugPrint('Criptomoedas carregadas: ${_allCryptos.length} itens');
     } catch (e) {
       _errorMessage = _getErrorMessage(e);
       _setState(CryptoListState.error);
@@ -81,33 +84,6 @@ class CryptoListController extends ChangeNotifier {
       _isRefreshing = false;
       notifyListeners();
     }
-  }
-
-  Future<void> loadMoreCryptos() async {
-    if (!_hasMoreData || _searchQuery.isNotEmpty || _isLoadingMore) return;
-
-    _isLoadingMore = true;
-    notifyListeners();
-
-    await Future.delayed(const Duration(milliseconds: 100));
-
-    _updateDisplayedCryptos();
-
-    _isLoadingMore = false;
-    notifyListeners();
-  }
-
-  void _updateDisplayedCryptos() {
-    final startIndex = _displayedCryptos.length;
-    final endIndex = min(startIndex + _itemsPerPage, _allCryptos.length);
-
-    if (startIndex >= endIndex) {
-      _hasMoreData = false;
-      return;
-    }
-
-    _displayedCryptos.addAll(_allCryptos.sublist(startIndex, endIndex));
-    _hasMoreData = endIndex < _allCryptos.length;
   }
 
   Future<void> searchCryptos(String query) async {
@@ -167,7 +143,6 @@ class CryptoListController extends ChangeNotifier {
   @override
   void dispose() {
     _allCryptos.clear();
-    _displayedCryptos.clear();
     _searchResults.clear();
     _onCryptosLoaded = null;
     super.dispose();

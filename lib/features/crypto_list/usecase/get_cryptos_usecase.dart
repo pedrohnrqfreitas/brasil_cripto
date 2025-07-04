@@ -1,7 +1,6 @@
 import '../../../data/crypto_list/entities/crypto_entity.dart';
 import '../../../data/crypto_list/repositories/crypto_list_repository.dart';
 
-
 class GetCryptosUseCase {
   final CryptoListRepository _repository;
 

@@ -1,4 +1,3 @@
-
 import '../entities/crypto_detail_entity.dart';
 
 class CryptoDetailModel {

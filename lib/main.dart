@@ -12,7 +12,6 @@ import 'features/home_page.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Configurar orientação e status bar
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -27,13 +26,10 @@ void main() async {
 
   final sharedPreferences = await SharedPreferences.getInstance();
 
-  // Inicializar providers de cada feature
-  // IMPORTANTE: A ordem importa! FavoritesController deve vir antes de CryptoListController
   final favoritesProviders = await FavoriteDependency.init(sharedPreferences);
   final cryptoListProviders = await CryptoListDependency.init();
   final cryptoDetailProviders = await CryptoDetailDependency.init();
 
-  // Combinar todos os providers na ordem correta
   final allProviders = [
     ...favoritesProviders,
     ...cryptoListProviders,
